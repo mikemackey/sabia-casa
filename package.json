@@ -1,0 +1,16 @@
+{
+  "name": "front-door-page",
+  "version": "1.0.0",
+  "description": "Front Door Page — sabia.casa. Designed frontend + Cloudflare Worker backend.",
+  "scripts": {
+    "build": "frontend-src/build.sh",
+    "test": "node smoke-test.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.28.1",
+    "jsdom": "^29.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "private": true
+}

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Mackey House — Front Door Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --cream:#efe6d2;        /* plate face */
+    --cream-2:#e7dcc2;      /* inset wells */
+    --cream-hi:#f7f0e2;     /* raised highlight face */
+    --ink:#211c14;          /* deepest relief / text */
+    --ink-soft:#4c4434;     /* secondary text */
+    --ink-3:#7d735d;        /* tertiary */
+    --clay:#b85c38;         /* accent */
+    --clay-deep:#9a4828;
+    --line:#cabd9f;
+    --line-2:#bdae8c;
+    --sans:'Hanken Grotesk', system-ui, sans-serif;
+    --mono:'Spline Sans Mono', ui-monospace, monospace;
+    /* QR target — the deployed front-door page */
+    --qr-url:"https://sabia.casa";
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    background:#23211d;
+    background-image:radial-gradient(130% 90% at 50% -10%, #34312b 0%, #1d1b18 72%);
+    font-family:var(--sans);
+    display:grid; place-items:center;
+    overflow:hidden;
+  }
+  #stage{ position:fixed; inset:0; display:grid; place-items:center; }
+  #fit{ transform-origin:center center; }
+
+  /* ---- the physical plate : letter ratio 215.9 × 279.4 mm → 1275 × 1650 px ---- */
+  .board{
+    position:relative;
+    width:1275px; height:1650px;
+    background:var(--cream);
+    background-image:
+      radial-gradient(120% 80% at 50% 0%, var(--cream-hi) 0%, var(--cream) 46%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><circle cx='1' cy='1' r='0.5' fill='%23000' opacity='0.025'/></svg>");
+    border-radius:64px;
+    box-shadow:
+      inset 0 5px 0 rgba(255,255,255,.5),
+      inset 0 -8px 0 rgba(80,62,32,.10),
+      0 40px 90px rgba(0,0,0,.5), 0 8px 22px rgba(0,0,0,.35);
+    overflow:hidden;
+    color:var(--ink);
+  }
+  /* hanging holes (relief detail) */
+  .hole{ position:absolute; top:46px; width:30px; height:30px; border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #cdbf9e, #8d8064);
+    box-shadow:inset 0 2px 3px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.45); }
+  .hole.l{ left:74px; } .hole.r{ right:74px; }
+
+  /* machined raised rim */
+  .rim{
+    position:absolute; inset:62px; border-radius:40px;
+    border:5px solid var(--ink);
+    box-shadow:0 0 0 4px var(--cream), 0 0 0 7px rgba(120,95,45,.22),
+      inset 0 0 0 2px rgba(255,255,255,.35);
+  }
+  .rim::after{
+    content:""; position:absolute; inset:14px; border-radius:28px;
+    border:2px solid var(--line-2);
+  }
+
+  .inner{
+    position:absolute; inset:62px; padding:74px 92px 60px;
+    display:flex; flex-direction:column;
+  }
+
+  /* ---- header ---- */
+  .head{ display:flex; align-items:center; gap:26px; }
+  .head > div{ flex:1 1 auto; min-width:0; }
+  .badge{
+    width:100px; height:100px; flex:0 0 auto; border-radius:26px;
+    background:var(--ink); color:var(--clay);
+    display:grid; place-items:center;
+    box-shadow:inset 0 3px 0 rgba(255,255,255,.10), 0 6px 0 #b9ac8d;
+  }
+  .hname{ font-size:45px; font-weight:900; letter-spacing:-.02em; line-height:1; white-space:nowrap; }
+  .hsub{ font-family:var(--mono); font-size:20px; font-weight:500; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--ink-3); margin-top:11px; }
+
+  .rule{ height:4px; background:var(--ink); border-radius:3px; margin:30px 0 0;
+    box-shadow:0 2px 0 rgba(255,255,255,.4); }
+  .rule.thin{ height:2px; background:var(--line-2); box-shadow:none; }
+
+  /* ---- headline ---- */
+  .kicker{ font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--clay-deep); margin-top:30px; }
+  .headline{ font-size:96px; font-weight:900; letter-spacing:-.025em; line-height:.94;
+    margin-top:14px; }
+  .lede{ font-size:31px; line-height:1.3; color:var(--ink-soft); margin-top:20px;
+    max-width:980px; font-weight:500; text-wrap:pretty; }
+
+  /* ---- two paths ---- */
+  .paths{ display:flex; flex-direction:column; gap:18px; margin-top:32px; }
+  .path{ display:flex; align-items:center; gap:28px;
+    background:var(--cream-hi); border:3px solid var(--ink); border-radius:26px;
+    padding:24px 30px;
+    box-shadow:0 7px 0 #c3b693, inset 0 2px 0 rgba(255,255,255,.6); }
+  .ptile{ width:94px; height:94px; flex:0 0 auto; border-radius:22px;
+    display:grid; place-items:center;
+    box-shadow:inset 0 3px 0 rgba(255,255,255,.18); }
+  .ptile.clay{ background:var(--clay); color:#fff; }
+  .ptile.ink{ background:var(--ink); color:var(--clay); }
+  .pnum{ font-family:var(--mono); font-size:18px; font-weight:700; letter-spacing:.2em;
+    color:var(--clay-deep); }
+  .ptitle{ font-size:38px; font-weight:800; letter-spacing:-.02em; line-height:1.04; margin-top:4px; }
+  .pbody{ font-size:24px; line-height:1.28; color:var(--ink-soft); margin-top:5px; font-weight:500; }
+
+  /* ---- QR block ---- */
+  .qrzone{ display:flex; align-items:center; gap:42px; margin-top:32px; }
+  .qrcard{ flex:0 0 auto; background:#fff; border:4px solid var(--ink); border-radius:28px;
+    padding:22px; box-shadow:0 8px 0 #c3b693, inset 0 0 0 2px rgba(0,0,0,.04); }
+  .qrcard #qr{ width:300px; height:300px; display:block; }
+  .qrcard #qr img, .qrcard #qr canvas, .qrcard #qr table{ width:300px !important; height:300px !important; display:block; }
+  .qrtxt{ flex:1; }
+  .qrtxt .big{ font-size:58px; font-weight:900; letter-spacing:-.03em; line-height:.95; }
+  .qrtxt .big .amp{ color:var(--clay); }
+  .qrtxt .sm{ font-size:27px; line-height:1.32; color:var(--ink-soft); margin-top:18px; font-weight:500; }
+  .urlchip{ display:inline-flex; align-items:center; gap:12px; margin-top:22px;
+    font-family:var(--mono); font-size:22px; font-weight:600; color:var(--ink);
+    background:var(--cream-2); border:2px dashed var(--line-2); border-radius:14px;
+    padding:12px 18px; }
+  .urlchip .dot{ width:11px; height:11px; border-radius:50%; background:var(--clay); }
+
+  /* ---- footer signature ---- */
+  .foot{ display:flex; align-items:center; gap:18px; margin-top:auto; }
+  .foot .fhouse{ color:var(--clay-deep); flex:0 0 auto; }
+  .foot .ftxt{ font-size:23px; font-weight:600; color:var(--ink-soft); letter-spacing:-.005em; }
+  .foot .ftag{ margin-left:auto; font-family:var(--mono); font-size:18px; font-weight:500;
+    letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase; white-space:nowrap; }
+
+  @media print{
+    /* [integration] print fix: the on-screen fit() transform would otherwise
+       carry into print. 1275px board → 8.5in letter width = scale 0.64. */
+    @page{ size: letter portrait; margin: 0; }
+    body{ background:#fff; display:block; overflow:visible; }
+    #stage{ position:static; display:block; }
+    #fit{ transform:scale(0.64) !important; transform-origin:top left; }
+    .board{ box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="fit">
+    <div class="board" id="board" data-screen-label="Front Door Board">
+      <span class="hole l"></span><span class="hole r"></span>
+      <div class="rim"></div>
+
+      <div class="inner">
+        <!-- header -->
+        <div class="head">
+          <div class="badge">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6.5L20 11"/><path d="M6 9.6V19h12V9.6"/><path d="M10 19v-4.5h4V19"/></svg>
+          </div>
+          <div>
+            <div class="hname">The Mackey House</div>
+            <div class="hsub">Queen Creek · Arizona</div>
+          </div>
+        </div>
+        <div class="rule"></div>
+
+        <!-- headline -->
+        <div class="kicker">· You knocked, we missed it ·</div>
+        <h1 class="headline">Sorry we<br/>missed you.</h1>
+        <p class="lede">No one made it to the door — but this house is still listening. Find your reason below, then scan once. No app, no account.</p>
+
+        <!-- two paths -->
+        <div class="paths">
+          <div class="path">
+            <div class="ptile clay">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>
+            </div>
+            <div>
+              <div class="pnum">FRIEND · NEIGHBOR · DELIVERY</div>
+              <div class="ptitle">Leave us a message</div>
+              <div class="pbody">A hello, a heads-up, or “package behind the planter.” It goes straight to the family.</div>
+            </div>
+          </div>
+
+          <div class="path">
+            <div class="ptile ink">
+              <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5V4.5A1.5 1.5 0 014.5 3h8l8.5 8.5a1.5 1.5 0 010 2.1l-6.9 6.9a1.5 1.5 0 01-2.1 0L3 12.5z"/><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div>
+              <div class="pnum">HERE TO SELL OR OFFER A SERVICE</div>
+              <div class="ptitle">Make your offer</div>
+              <div class="pbody">Skip the cold knock. Pitch it through the door instead — every offer gets read.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR -->
+        <div class="qrzone">
+          <div class="qrcard"><div id="qr"></div></div>
+          <div class="qrtxt">
+            <div class="big">Scan to<br/>begin <span class="amp">→</span></div>
+            <div class="sm">Both options live behind this one code. Point your camera here.</div>
+            <div class="urlchip"><span class="dot"></span>sabia.casa</div>
+          </div>
+        </div>
+
+        <div class="rule thin" style="margin-top:30px"></div>
+        <!-- signature -->
+        <div class="foot">
+          <span class="fhouse"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6.5L20 11"/><path d="M6 9.6V19h12V9.6"/></svg></span>
+          <span class="ftxt">This home logs and reviews every offer it receives.</span>
+          <span class="ftag">Smart House OS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#efe6d2"/>
+    <rect x="33" y="22" width="34" height="56" rx="4" fill="none" stroke="#211c14" stroke-width="3"/>
+    <path d="M30 24l20-13 20 13" fill="none" stroke="#b85c38" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+    <rect x="42" y="50" width="16" height="16" fill="#211c14"/>
+  </svg>
+</template>
+
+<script>
+(function () {
+  function fit() {
+    var b = 60; // breathing room
+    var s = Math.min((window.innerWidth - b) / 1275, (window.innerHeight - b) / 1650);
+    document.getElementById('fit').style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  // ---- QR (sample URL — replace before manufacturing) ----
+  var url = getComputedStyle(document.documentElement).getPropertyValue('--qr-url').trim().replace(/^["']|["']$/g, '');
+  var holder = document.getElementById('qr');
+  try {
+    if (typeof QRCode === 'undefined') throw new Error('lib');
+    new QRCode(holder, {
+      text: url, width: 300, height: 300,
+      colorDark: '#211c14', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  } catch (e) {
+    // fallback: deterministic faux-QR so the board still reads as designed
+    var n = 25, cv = document.createElement('canvas'); cv.width = cv.height = 300;
+    var ctx = cv.getContext('2d'), c = 300 / n, seed = 7;
+    function rnd(){ seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 300, 300);
+    ctx.fillStyle = '#211c14';
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) if (rnd() > 0.5) ctx.fillRect(x*c, y*c, c, c);
+    function eye(ox, oy){ ctx.fillStyle='#211c14'; ctx.fillRect(ox,oy,c*7,c*7);
+      ctx.fillStyle='#fff'; ctx.fillRect(ox+c,oy+c,c*5,c*5);
+      ctx.fillStyle='#211c14'; ctx.fillRect(ox+c*2,oy+c*2,c*3,c*3); }
+    eye(0,0); eye(c*18,0); eye(0,c*18);
+    holder.appendChild(cv);
+  }
+})();
+</script>
+</body>
+</html>

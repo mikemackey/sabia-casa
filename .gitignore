@@ -1,0 +1,7 @@
+node_modules/
+api/node_modules/
+api/local.settings.json
+.env
+*.log
+sign/qr.png
+sign/qr.svg
