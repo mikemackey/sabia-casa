@@ -32,6 +32,7 @@ app.http("message", {
     const message = str(form, "message", 500);
     const senderName = str(form, "sender_name", 80);
     const contact = str(form, "contact", 120);
+    const property = str(form, "property", 120);
 
     if (!RECIPIENTS.includes(recipient)) return json(400, { ok: false, error: "Pick who the message is for." });
     if (!message) return json(400, { ok: false, error: "The message is empty." });
@@ -48,11 +49,12 @@ app.http("message", {
 
       const tgText =
         `🏠 <b>Doorstep message</b> — for <b>${esc(recipient)}</b>\n` +
+        (property ? `<i>${esc(property)}</i>\n` : "") +
         `From: <b>${esc(senderName)}</b>${contact ? ` (${esc(contact)})` : ""}\n\n${esc(message)}`;
       const photoFileId = await notifyTelegram(tgText, photo);
 
       await insertMessage({
-        recipient, message, sender_name: senderName, contact,
+        recipient, message, sender_name: senderName, contact, property,
         photo_file_id: photoFileId,
         ip_hash: ipHash, user_agent: (request.headers.get("user-agent") || "").slice(0, 250),
       });

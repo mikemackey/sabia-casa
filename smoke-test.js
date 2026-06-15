@@ -8,7 +8,7 @@ const read = (p) => fs.readFileSync(path.join(__dirname, p), 'utf8');
 
 const dom = new JSDOM(`<!DOCTYPE html><html><body><div id="root"></div></body></html>`, {
   runScripts: 'outside-only',
-  url: 'https://sabia.casa/',
+  url: 'https://sabia.casa/ds/85142/22752-s-226-th-pl',
   pretendToBeVisual: true,
 });
 const { window } = dom;
@@ -60,6 +60,7 @@ const assert = (cond, msg) => { if (!cond) { console.error('FAIL:', msg); proces
   assert(m, 'message POSTed to /api/message');
   assert(m.fields.recipient === 'The household', 'recipient label sent');
   assert(m.fields.sender_name === 'Smoke Tester', 'sender_name sent');
+  assert(m.fields.property === '85142/22752-s-226-th-pl', 'property id sent on message');
   assert(m.fields.website === '', 'honeypot empty');
   assert(Number(m.fields.t0) > 0, 't0 token sent');
 
@@ -98,10 +99,29 @@ const assert = (cond, msg) => { if (!cond) { console.error('FAIL:', msg); proces
   assert(p, 'proposal POSTed to /api/proposal');
   assert(p.fields.vendor_name === 'Vendor Vic', 'vendor_name sent');
   assert(p.fields.category === 'HVAC', 'category sent');
+  assert(p.fields.property === '85142/22752-s-226-th-pl', 'property id sent on proposal');
   assert(p.fields.engagement_type === 'recurring', 'engagement display mapped to API value');
   assert(p.fields.roc_license === 'ROC 123456', 'roc_license sent');
   assert(p.fields.consent === 'yes', 'consent sent');
   assert(p.fields.website === '', 'honeypot empty');
 
   console.log('\nAll smoke tests passed.');
+
+  // ---------- Unknown address → NotConfigured (property routing) ----------
+  const dom2 = new JSDOM(`<!DOCTYPE html><html><body><div id="root"></div></body></html>`, {
+    runScripts: 'outside-only',
+    url: 'https://sabia.casa/ds/99999/not-a-real-house',
+    pretendToBeVisual: true,
+  });
+  const w2 = dom2.window;
+  w2.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true }) });
+  w2.eval(read('frontend/vendor/react.production.min.js'));
+  w2.eval(read('frontend/vendor/react-dom.production.min.js'));
+  w2.eval(read('frontend/app.js'));
+  await new Promise((r) => setTimeout(r, 30));
+  const body2 = w2.document.body.textContent;
+  assert(/isn.t set up yet/.test(body2), 'unknown address shows NotConfigured notice');
+  assert(!/Leave a message/.test(body2), 'unknown address does NOT render the doorstep');
+
+  console.log('All property-routing checks passed.');
 })().catch((e) => { console.error('FAIL (exception):', e); process.exit(1); });

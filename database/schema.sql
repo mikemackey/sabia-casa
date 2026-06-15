@@ -37,6 +37,7 @@ CREATE TABLE doorstep.proposals (
     contact_phone   NVARCHAR(40)    NULL,
     contact_email   NVARCHAR(120)   NULL,
     photo_file_id   NVARCHAR(200)   NULL,                       -- Telegram file_id (v1 photo store)
+    property        NVARCHAR(120)   NULL,                       -- "{zip}/{slug}" the doorstep served
     extra           NVARCHAR(MAX)   NULL,                       -- reserved: JSON for semi-structured fields
     ip_hash         CHAR(32)        NULL,
     user_agent      NVARCHAR(250)   NULL
@@ -53,6 +54,7 @@ CREATE TABLE doorstep.messages (
     sender_name   NVARCHAR(80)  NOT NULL,
     contact       NVARCHAR(120) NULL,                           -- optional phone/email for replies
     photo_file_id NVARCHAR(200) NULL,
+    property      NVARCHAR(120) NULL,                           -- "{zip}/{slug}" the doorstep served
     ip_hash       CHAR(32)      NULL,
     user_agent    NVARCHAR(250) NULL
 );
@@ -67,6 +69,20 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'ix_messages_created')
     CREATE INDEX ix_messages_created ON doorstep.messages (created_at DESC);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'ix_messages_ip')
     CREATE INDEX ix_messages_ip ON doorstep.messages (ip_hash, created_at);
+GO
+
+/* ---------- Site-level: waitlist (root sabia.casa "notify me") -------- */
+IF SCHEMA_ID('site') IS NULL EXEC('CREATE SCHEMA site');
+GO
+
+IF OBJECT_ID('site.waitlist', 'U') IS NULL
+CREATE TABLE site.waitlist (
+    id          INT IDENTITY(1,1) PRIMARY KEY,
+    created_at  DATETIME2(0)  NOT NULL DEFAULT SYSUTCDATETIME(),
+    email       NVARCHAR(254) NOT NULL UNIQUE,
+    ip_hash     CHAR(32)      NULL,
+    user_agent  NVARCHAR(250) NULL
+);
 GO
 
 /* =====================================================================

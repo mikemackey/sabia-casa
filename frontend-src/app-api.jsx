@@ -43,6 +43,7 @@ function submitMessage({ recipientLabel, message, senderName, contact, photo, hp
     message,
     sender_name: senderName,
     contact: contact || '',
+    property: window.PROPERTY_ID || '', // which house this doorstep serves
     website: hp || '', // honeypot — must stay empty for humans
   }, photo);
 }
@@ -62,6 +63,7 @@ function submitProposal(p) {
     website_url: p.web || '',
     referral_source: p.referral ? (REFERRAL_VALUES[p.referral] || 'other') : '',
     consent: 'yes',
+    property: window.PROPERTY_ID || '', // which house this doorstep serves
     website: p.hp || '', // honeypot
   }, p.photo);
 }

@@ -70,11 +70,12 @@ async function insertMessage(m) {
     .input("sender_name", sql.NVarChar(80), m.sender_name)
     .input("contact", sql.NVarChar(120), m.contact || null)
     .input("photo_file_id", sql.NVarChar(200), m.photo_file_id || null)
+    .input("property", sql.NVarChar(120), m.property || null)
     .input("ip_hash", sql.Char(32), m.ip_hash)
     .input("user_agent", sql.NVarChar(250), m.user_agent || null)
     .query(`INSERT INTO doorstep.messages
-      (recipient, message, sender_name, contact, photo_file_id, ip_hash, user_agent)
-      VALUES (@recipient, @message, @sender_name, @contact, @photo_file_id, @ip_hash, @user_agent);`);
+      (recipient, message, sender_name, contact, photo_file_id, property, ip_hash, user_agent)
+      VALUES (@recipient, @message, @sender_name, @contact, @photo_file_id, @property, @ip_hash, @user_agent);`);
 }
 
 // Inserts a proposal and returns its new id (used to build the QC-#### ref).
@@ -92,16 +93,17 @@ async function insertProposal(p) {
     .input("referral_source", sql.NVarChar(20), p.referral_source || null)
     .input("contact_phone", sql.NVarChar(40), p.contact_phone || null)
     .input("contact_email", sql.NVarChar(120), p.contact_email || null)
+    .input("property", sql.NVarChar(120), p.property || null)
     .input("ip_hash", sql.Char(32), p.ip_hash)
     .input("user_agent", sql.NVarChar(250), p.user_agent || null)
     .query(`INSERT INTO doorstep.proposals
       (vendor_name, company, category, description, engagement_type, price_note,
        roc_license, website, referral_source, contact_phone, contact_email,
-       ip_hash, user_agent)
+       property, ip_hash, user_agent)
       OUTPUT INSERTED.id
       VALUES (@vendor_name, @company, @category, @description, @engagement_type,
        @price_note, @roc_license, @website, @referral_source, @contact_phone,
-       @contact_email, @ip_hash, @user_agent);`);
+       @contact_email, @property, @ip_hash, @user_agent);`);
   return r.recordset[0].id;
 }
 
@@ -115,4 +117,16 @@ async function finalizeProposal(id, ref, photoFileId) {
     .query(`UPDATE doorstep.proposals SET ref = @ref, photo_file_id = @photo_file_id WHERE id = @id;`);
 }
 
-module.exports = { getPool, countRecentByIp, insertMessage, insertProposal, finalizeProposal };
+// Site-level waitlist (root "notify me" page). Idempotent on email.
+async function insertWaitlist(w) {
+  const pool = await getPool();
+  await pool.request()
+    .input("email", sql.NVarChar(254), w.email)
+    .input("ip_hash", sql.Char(32), w.ip_hash)
+    .input("user_agent", sql.NVarChar(250), w.user_agent || null)
+    .query(`IF NOT EXISTS (SELECT 1 FROM site.waitlist WHERE email = @email)
+              INSERT INTO site.waitlist (email, ip_hash, user_agent)
+              VALUES (@email, @ip_hash, @user_agent);`);
+}
+
+module.exports = { getPool, countRecentByIp, insertMessage, insertProposal, finalizeProposal, insertWaitlist };

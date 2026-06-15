@@ -39,6 +39,7 @@ app.http("proposal", {
       referral_source: str(form, "referral_source", 20),
       contact_phone: str(form, "contact_phone", 40),
       contact_email: str(form, "contact_email", 120),
+      property: str(form, "property", 120),
     };
 
     if (!f.vendor_name) return json(400, { ok: false, error: "Add your name." });
@@ -67,6 +68,7 @@ app.http("proposal", {
 
       const tgText =
         `📋 <b>New proposal ${ref}</b> — ${esc(f.category)}\n` +
+        (f.property ? `<i>${esc(f.property)}</i>\n` : "") +
         `From: <b>${esc(f.vendor_name)}</b>${f.company ? ` — ${esc(f.company)}` : " (independent)"}\n` +
         `Type: ${esc(f.engagement_type)}${f.price_note ? ` · ~${esc(f.price_note)}` : ""}` +
         `${f.roc_license ? `\nROC: ${esc(f.roc_license)}` : ""}` +

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>The Mackey House — Front Door</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/app.css" />
+<style>
+  /* [integration] production sizing: full-bleed on a real phone
+     (the design session previewed inside a 402×874 device frame). */
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--sand, #ece3d3); }
+  #root { height: 100%; }
+  #root .fd-app { height: 100dvh; }
+  #root .fd-scroll { padding-bottom: calc(34px + env(safe-area-inset-bottom)); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

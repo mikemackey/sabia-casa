@@ -6,6 +6,28 @@ Database (serverless)** stores submissions; Telegram notifies Mike and Tanya.
 Deploys from GitHub via Actions — the same pattern as prior projects. Runs on the
 personal-subscription VS Enterprise dev/test credit (PAM-confirmed dev/test use).
 
+## URL structure
+
+- `https://sabia.casa/` — project landing page ("under development" + email waitlist).
+- `https://sabia.casa/ds/{zip}/{slug}` — a property's doorstep. One address is
+  registered today: `/ds/85142/22752-s-226-th-pl`. Unknown `/ds/*` addresses get a
+  graceful "not set up" notice; root assets and `/api/*` are excluded from the SPA fallback.
+
+Address encoding/normalization is **not implemented yet** — the app looks up the raw
+`{zip}/{slug}` key in the `PROPERTIES` registry (`frontend-src/app-data.jsx`) and stores
+that string as `property` on every submission. Add a property by adding a registry entry.
+
+## Deploying the URL-restructure update
+
+1. **Apply the DB migration once** (portal → `sabia` → Query editor): run
+   `database/migration-001-properties-and-waitlist.sql`. Idempotent; adds the `property`
+   column to both doorstep tables and creates `site.waitlist`.
+2. **Push to `main`** — GitHub Actions redeploys frontend + functions (now includes the
+   `notify` function and the new routing). No new App Settings are needed.
+3. Verify: `/` shows the waitlist page (submit a test email → it lands in `site.waitlist`
+   and pings Telegram); `/ds/85142/22752-s-226-th-pl` shows the doorstep and a test
+   submission records its `property`.
+
 ```
 front-door-page/
 ├── staticwebapp.config.json     SWA routing, Node 20 API runtime, security headers
