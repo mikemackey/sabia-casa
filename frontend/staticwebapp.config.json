@@ -1,21 +1,9 @@
 {
-  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
-  "platform": {
-    "apiRuntime": "node:20"
-  },
   "routes": [
-    { "route": "/ds", "redirect": "/", "statusCode": 302 },
-    { "route": "/ds/", "redirect": "/", "statusCode": 302 },
     { "route": "/ds/*", "rewrite": "/ds/index.html" }
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*", "/ds/*", "/app.js", "/app.css", "/vendor/*", "*.{png,jpg,jpeg,svg,ico,webp,woff,woff2}"]
-  },
-  "globalHeaders": {
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "Referrer-Policy": "no-referrer",
-    "X-Robots-Tag": "noindex, nofollow"
+    "exclude": ["/api/*", "/ds/*", "/app.js", "/app.css", "/vendor/*"]
   }
 }
